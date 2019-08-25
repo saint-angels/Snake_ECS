@@ -24,16 +24,40 @@ public class JuiceFollowSystem : JobSystemDelayedWithBuffer
         
         public void Execute(Entity entity, int index, ref BodySegment bodySegment, ref GridPosition gridPosition, ref Movable movable)
         {
+            if (juiceAtPositions.TryGetValue(gridPosition.Value, out var currentPositionJuiceEntity))
+            {
+                commandBuffer.DestroyEntity(index, currentPositionJuiceEntity);
+            }
+            
             for (int i = 0; i < neighbourOffsets.Length; i++)
             {
-                int2 neighbourCoords = neighbourOffsets[i];
-//                if (juiceAtPositions.TryGetValue(gridPosition.Value + neighbourCoords, out var neighbourJuiceEntity))
-//                {
-//                    gridPosition.Value += neighbourCoords;
-//                    
-//                    commandBuffer.DestroyEntity(index, neighbourJuiceEntity);
-//                    break;
-//                }
+                int2 neioghbourOffset = neighbourOffsets[i];
+                if (juiceAtPositions.TryGetValue(gridPosition.Value + neioghbourOffset, out var neighbourJuiceEntity))
+                {
+                    movable.direction = OffsetToDirection(neioghbourOffset);
+                    commandBuffer.DestroyEntity(index, neighbourJuiceEntity);
+                    break;
+                }
+            }
+        }
+
+        private static Direction OffsetToDirection(int2 offset)
+        {
+            if (offset.x == -1)
+            {
+                return Direction.LEFT;
+            } 
+            else if (offset.x == 1)
+            {
+                return Direction.RIGHT;
+            }
+            else if (offset.y == -1)
+            {
+                return Direction.DOWN;
+            }
+            else
+            {
+                return Direction.UP;
             }
         }
     }
