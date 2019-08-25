@@ -9,8 +9,11 @@ using static Unity.Mathematics.math;
 
 public abstract class JobSystemDelayed : JobComponentSystem
 {
-    float currentCooldown;
+    //TODO: REMOVE!!!
     protected EntityQuery spawnerQuery;
+    protected SpawnerGardenEntity spawner;
+    
+    private float currentCooldown;
 
     protected override void OnCreate()
     {
@@ -26,10 +29,10 @@ public abstract class JobSystemDelayed : JobComponentSystem
             currentCooldown = Root.SimulationTick;
             
             NativeArray<SpawnerGardenEntity> spawnerArray = spawnerQuery.ToComponentDataArray<SpawnerGardenEntity>(Allocator.TempJob);
-            SpawnerGardenEntity spawner = spawnerArray[0];
+            spawner = spawnerArray[0];
             spawnerArray.Dispose();
             
-            JobHandle compoundJobHandle = DelayedUpdate(inputDependencies, spawner);
+            JobHandle compoundJobHandle = DelayedUpdate(inputDependencies);
             return compoundJobHandle;
         }
         else
@@ -39,27 +42,36 @@ public abstract class JobSystemDelayed : JobComponentSystem
         }
     }
 
-    protected abstract JobHandle DelayedUpdate(JobHandle inputDependencies, SpawnerGardenEntity spawner);
+    protected abstract JobHandle DelayedUpdate(JobHandle inputDependencies);
 }
 
 public abstract class JobSystemDelayedWithBuffer : JobSystemDelayed
 {
-    private EntityCommandBufferSystem m_Barrier;
+    protected EntityCommandBuffer.Concurrent beginInitCommandBuffer;
+    protected EntityCommandBuffer.Concurrent endSimulationCommandBuffer;
+
+    private EntityCommandBufferSystem endSimulationBarrier;
+    private EntityCommandBufferSystem beginInitBarrier;
     
     protected override void OnCreate()
     {
         base.OnCreate();
-        m_Barrier = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+        endSimulationBarrier = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+        beginInitBarrier = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
     }
 
-    protected override JobHandle DelayedUpdate(JobHandle inputDependencies, SpawnerGardenEntity spawner)
+    protected override JobHandle DelayedUpdate(JobHandle inputDependencies)
     {
-        EntityCommandBuffer.Concurrent commandBuffer = m_Barrier.CreateCommandBuffer().ToConcurrent();
-        JobHandle jobHandle = DelayedUpdateBuffer(inputDependencies, spawner, commandBuffer);
-        m_Barrier.AddJobHandleForProducer(jobHandle);
+        endSimulationCommandBuffer = endSimulationBarrier.CreateCommandBuffer().ToConcurrent();
+        beginInitCommandBuffer = beginInitBarrier.CreateCommandBuffer().ToConcurrent();
+        
+        JobHandle jobHandle = DelayedUpdateBuffer(inputDependencies);
+        
+        beginInitBarrier.AddJobHandleForProducer(jobHandle);
+        endSimulationBarrier.AddJobHandleForProducer(jobHandle);
 
         return jobHandle;
     }
     
-    protected abstract JobHandle DelayedUpdateBuffer(JobHandle inputDependencies, SpawnerGardenEntity spawner, EntityCommandBuffer.Concurrent commandBuffer);
+    protected abstract JobHandle DelayedUpdateBuffer(JobHandle inputDependencies);
 }

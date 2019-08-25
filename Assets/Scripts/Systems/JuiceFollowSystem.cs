@@ -46,7 +46,7 @@ public class JuiceFollowSystem : JobSystemDelayedWithBuffer
         juiceEntitiesQuery = GetEntityQuery(typeof(Juice), typeof(GridPosition));
     }
 
-    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies, SpawnerGardenEntity spawner, EntityCommandBuffer.Concurrent commandBuffer)
+    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies)
     {
         NativeArray<GridPosition> gridEntityPositions = juiceEntitiesQuery.ToComponentDataArray<GridPosition>(Allocator.TempJob);
         var juiceEntities = juiceEntitiesQuery.ToEntityArray(Allocator.TempJob);
@@ -59,7 +59,7 @@ public class JuiceFollowSystem : JobSystemDelayedWithBuffer
 
         var jobHandle = new JuiceFollowSystemJob
         {
-           commandBuffer = commandBuffer,
+           commandBuffer = beginInitCommandBuffer,
            juiceAtPositions = juiceAtPositions
         }.Schedule(this, inputDependencies);
         

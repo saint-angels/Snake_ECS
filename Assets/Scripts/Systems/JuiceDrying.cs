@@ -24,11 +24,11 @@ public class JuiceDrying : JobSystemDelayedWithBuffer
         }
     }
 
-    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies, SpawnerGardenEntity spawner, EntityCommandBuffer.Concurrent commandBuffer)
+    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies)
     {
         JobHandle jobHandle = new JuiceDryingJob
         {
-            CommandBuffer = commandBuffer,
+            CommandBuffer = endSimulationCommandBuffer,
         }.Schedule(this, inputDependencies);
         
         return jobHandle;   

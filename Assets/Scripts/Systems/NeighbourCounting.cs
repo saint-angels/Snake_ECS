@@ -45,7 +45,7 @@ public abstract class NeighbourCounting<T1, T2> : JobSystemDelayed
         targetNeighbourQuery = GetEntityQuery(typeof(T2), typeof(GridPosition));
     }
 
-    protected override JobHandle DelayedUpdate(JobHandle inputDependencies, SpawnerGardenEntity spawner)
+    protected override JobHandle DelayedUpdate(JobHandle inputDependencies)
     {
         NativeArray<GridPosition> gridEntityPositions = targetNeighbourQuery.ToComponentDataArray<GridPosition>(Allocator.TempJob);
 

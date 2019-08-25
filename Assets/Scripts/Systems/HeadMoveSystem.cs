@@ -4,8 +4,10 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 using static Unity.Mathematics.math;
 
+//[UpdateAfter(typeof(GridWrapping))]
 public class HeadMoveSystem : JobSystemDelayedWithBuffer
 {
 //    [BurstCompile]
@@ -21,28 +23,29 @@ public class HeadMoveSystem : JobSystemDelayedWithBuffer
             Entity newJuiceEntity = CommandBuffer.Instantiate(index, spawner.prefabFollowJuice);
 //            CommandBuffer.AddComponent<Juice>(index, newJuiceEntity, new Juice {lifetimeTicks = 4});
             int layer = Root.ConfigManager.LayersConfig.LayerForEntity(EntityType.FOLLOW_JUICE);
-            int2 juicePosition = gridPosition.Value;
-            CommandBuffer.SetComponent(index, newJuiceEntity, new GridPosition { Value = juicePosition, layer = layer});
-            CommandBuffer.SetComponent(index, newJuiceEntity, new Translation() { Value = GridConfig.PositionForCoordinates(juicePosition.x, juicePosition.y, gridPosition.layer) });
-            
+            int2 juiceGridPosition = gridPosition.Value;
+            float3 juiceTranslation = GridConfig.PositionForCoordinates(juiceGridPosition.x, juiceGridPosition.y, gridPosition.layer);
+            CommandBuffer.SetComponent(index, newJuiceEntity, new GridPosition { Value = juiceGridPosition, layer = layer});
+            CommandBuffer.SetComponent(index, newJuiceEntity, new Translation() { Value = juiceTranslation});
+
             if (buttonDireciton != Direction.NONE)
             {
                 head.direction = SwitchDirection(head.direction, buttonDireciton);
             }
             int2 offset = GridHelpers.DirectionToInt2(head.direction);
-            gridPosition.Value = gridPosition.Value + new int2(offset.x, offset.y);
-//            translation.Value = GridConfig.PositionForCoordinates(gridPosition.Value.x, gridPosition.Value.y, gridPosition.worldLayer);
+            CommandBuffer.SetComponent(index, entity, new GridPosition { Value = gridPosition.Value + new int2(offset.x, offset.y), layer = layer});
+            CommandBuffer.SetComponent(index, entity, new Translation() { Value = GridConfig.PositionForCoordinates(gridPosition.Value.x, gridPosition.Value.y, gridPosition.layer)});
         }
     }
 
-    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies, SpawnerGardenEntity spawner, EntityCommandBuffer.Concurrent buffer)
+    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies)
     {
         Direction buttonDirection = Root.PlayerInput.GetPressedDirection();
 
         JobHandle newJobHandle = new HeadMoveSystem2Job
         {
             spawner = spawner,
-            CommandBuffer = buffer,
+            CommandBuffer = beginInitCommandBuffer,
             buttonDireciton = buttonDirection
         }.Schedule(this, inputDependencies);
 

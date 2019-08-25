@@ -41,11 +41,11 @@ public abstract class EntityMorphing<T1> : JobSystemDelayedWithBuffer
         spawnerQuery = GetEntityQuery(typeof(SpawnerGardenEntity));
     }
 
-    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies, SpawnerGardenEntity spawner, EntityCommandBuffer.Concurrent commandBuffer)
+    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies)
     {
         var jobHandle = new EntityMorphingJob
         {
-            CommandBuffer = commandBuffer,
+            CommandBuffer = endSimulationCommandBuffer,
             spawner = spawner,
             random = new Random((uint)(UnityEngine.Random.value * 100 + 1)),
             targetEntityType = targetEntityType,
@@ -94,11 +94,11 @@ public abstract class EntityMorphing<T1, T2> : JobSystemDelayedWithBuffer
     protected virtual int ConditionLessThan => int.MaxValue;
     
 
-    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies, SpawnerGardenEntity spawner, EntityCommandBuffer.Concurrent commandBuffer)
+    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies)
     {
         var jobHandle = new EntityMorphingJob
         {
-            CommandBuffer = commandBuffer,
+            CommandBuffer = endSimulationCommandBuffer,
             spawner = spawner,
             random = new Random((uint)(UnityEngine.Random.value * 100 + 1)),
             targetEntityType = targetEntityType,
@@ -148,11 +148,11 @@ public abstract class EntityMorphingX<T1, T2> : JobSystemDelayedWithBuffer
         spawnerQuery = GetEntityQuery(typeof(SpawnerGardenEntity));
     }
 
-    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies, SpawnerGardenEntity spawner, EntityCommandBuffer.Concurrent commandBuffer)
+    protected override JobHandle DelayedUpdateBuffer(JobHandle inputDependencies)
     {
         var jobHandle = new EntityMorphingJob
         {
-            CommandBuffer = commandBuffer,
+            CommandBuffer = endSimulationCommandBuffer,
             spawner = spawner,
             targetEntityType = targetEntityType,
             multiplier = Multiplier
