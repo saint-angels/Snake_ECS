@@ -36,27 +36,27 @@ public class GardenCreator : MonoBehaviour
         
         Entity earthEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(earthPrefab, World.Active);
 
-//        var entityPrefabs = new RandomSelection[]
-//        {
-//            new RandomSelection(earthEntityPrefab, 1f), 
-////            new RandomSelection(leafEntityPrefab, .7f), 
-////            new RandomSelection(wormEntityPrefab, .1f) 
-//        };
+        var entityPrefabs = new RandomSelection[]
+        {
+            new RandomSelection(earthEntityPrefab, 1f), 
+//            new RandomSelection(leafEntityPrefab, .7f), 
+//            new RandomSelection(wormEntityPrefab, .1f) 
+        };
         
         //Generate grid
         
-//        for (int x = 0; x < GridConfig.width; x++)
-//        {
-//            for (int y = 0; y < GridConfig.height; y++)
-//            {
-//                Entity randomPrefab = GetRandomValue(entityPrefabs);
-//                Entity instance = entityManager.Instantiate(randomPrefab);
-//                int z = Root.ConfigManager.LayersConfig.LayerForEntity(EntityType.EARTH);
-//                entityManager.SetComponentData(instance, new GridPosition { Value = new int2(x, y),  worldLayer = z});
-//                float3 position = GridConfig.PositionForCoordinates(x, y, z);
-//                entityManager.SetComponentData(instance, new Translation {Value = position});
-//            }
-//        }
+        for (int x = 0; x < GridConfig.width; x++)
+        {
+            for (int y = 0; y < GridConfig.height; y++)
+            {
+                Entity randomPrefab = GetRandomValue(entityPrefabs);
+                Entity instance = entityManager.Instantiate(randomPrefab);
+                int z = Root.ConfigManager.LayersConfig.LayerForEntity(EntityType.EARTH);
+                entityManager.SetComponentData(instance, new GridPosition { Value = new int2(x, y),  layer = z});
+                float3 position = GridConfig.PositionForCoordinates(x, y, z);
+                entityManager.SetComponentData(instance, new Translation {Value = position});
+            }
+        }
         
         //Put head on a grid
         Entity headEntityPrafab = GameObjectConversionUtility.ConvertGameObjectHierarchy(headPrefab, World.Active);
@@ -70,11 +70,11 @@ public class GardenCreator : MonoBehaviour
 //        entityManager.SetComponentData(headEntityInstance, new Translation {Value = positionHead});
         
         //Add body segments
-//        for (int i = 1; i <= 3; i++)
-//        {
-//            Entity bodySegmentEntityInstance = entityManager.Instantiate(GameObjectConversionUtility.ConvertGameObjectHierarchy(bodySegmentPrefab, World.Active));
-//            entityManager.SetComponentData(bodySegmentEntityInstance, new GridPosition { Value = new int2(gridPositionHead.x, gridPositionHead.y - i), worldLayer = headVisualZ});
-//        }
+        for (int i = 1; i <= 1; i++)
+        {
+            Entity bodySegmentEntityInstance = entityManager.Instantiate(GameObjectConversionUtility.ConvertGameObjectHierarchy(bodySegmentPrefab, World.Active));
+            entityManager.SetComponentData(bodySegmentEntityInstance, new GridPosition { Value = new int2(gridPositionHead.x, gridPositionHead.y - i), layer = headVisualZ});
+        }
         
         
         Destroy(gameObject);

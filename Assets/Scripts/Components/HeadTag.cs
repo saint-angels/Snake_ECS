@@ -4,7 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 
 [Serializable]
-public struct Head : IComponentData
+public struct HeadTag : IComponentData
 {
-    public Direction direction;
+    
 }

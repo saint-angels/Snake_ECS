@@ -8,8 +8,8 @@ using static Unity.Mathematics.math;
 
 public class JuiceFollowSystem : JobSystemDelayedWithBuffer
 {
-    [ExcludeComponent(typeof(Head))]
-    struct JuiceFollowSystemJob : IJobForEachWithEntity<BodySegment, GridPosition>
+    [ExcludeComponent(typeof(HeadTag))]
+    struct JuiceFollowSystemJob : IJobForEachWithEntity<BodySegment, GridPosition, Movable>
     {
         [ReadOnly] public NativeHashMap<int2, Entity> juiceAtPositions;
         [WriteOnly] public EntityCommandBuffer.Concurrent commandBuffer;
@@ -22,18 +22,18 @@ public class JuiceFollowSystem : JobSystemDelayedWithBuffer
             new int2(0, 1 ),
         };
         
-        public void Execute(Entity entity, int index, ref BodySegment bodySegment, ref GridPosition gridPosition)
+        public void Execute(Entity entity, int index, ref BodySegment bodySegment, ref GridPosition gridPosition, ref Movable movable)
         {
             for (int i = 0; i < neighbourOffsets.Length; i++)
             {
                 int2 neighbourCoords = neighbourOffsets[i];
-                if (juiceAtPositions.TryGetValue(gridPosition.Value + neighbourCoords, out var neighbourJuiceEntity))
-                {
-                    gridPosition.Value = gridPosition.Value + neighbourCoords;
-                    
-                    commandBuffer.DestroyEntity(index, neighbourJuiceEntity);
-                    break;
-                }
+//                if (juiceAtPositions.TryGetValue(gridPosition.Value + neighbourCoords, out var neighbourJuiceEntity))
+//                {
+//                    gridPosition.Value += neighbourCoords;
+//                    
+//                    commandBuffer.DestroyEntity(index, neighbourJuiceEntity);
+//                    break;
+//                }
             }
         }
     }

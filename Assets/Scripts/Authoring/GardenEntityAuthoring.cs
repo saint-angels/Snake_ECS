@@ -24,15 +24,15 @@ public class GardenEntityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
                 dstManager.AddComponentData(entity, new Earth());
                 break;
             case EntityType.HEAD:
-                dstManager.AddComponentData(entity, new Head { direction = Direction.UP});
-                dstManager.AddComponentData(entity, new Moving());
+                dstManager.AddComponentData(entity, new HeadTag());
+                dstManager.AddComponentData(entity, new Movable { direction = Direction.UP});
                 break;
             case EntityType.FOLLOW_JUICE:
                 dstManager.AddComponentData(entity, new Juice {lifetimeTicks = 4});
                 break;
             case EntityType.BODY:
                 dstManager.AddComponentData(entity, new BodySegment { });
-                dstManager.AddComponentData(entity, new Moving());
+                dstManager.AddComponentData(entity, new Movable { direction = Direction.UP});
                 break;
         }
     }

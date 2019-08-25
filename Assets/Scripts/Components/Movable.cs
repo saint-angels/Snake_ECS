@@ -4,7 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 
 [Serializable]
-public struct Moving : IComponentData
+public struct Movable : IComponentData
 {
-
+    public Direction direction;
 }
