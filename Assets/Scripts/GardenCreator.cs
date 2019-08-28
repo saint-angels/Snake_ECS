@@ -35,12 +35,17 @@ public class GardenCreator : MonoBehaviour
         entityManager = World.Active.EntityManager;
         
         Entity earthEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(earthPrefab, World.Active);
+        Entity bodyEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(bodySegmentPrefab, World.Active);
 
-        var entityPrefabs = new RandomSelection[]
+//        var entityPrefabs = new RandomSelection[]
+//        {
+//            new RandomSelection(earthEntityPrefab, 1f),
+//        };
+
+        var table = new Dictionary<int, Entity>
         {
-            new RandomSelection(earthEntityPrefab, 1f), 
-//            new RandomSelection(leafEntityPrefab, .7f), 
-//            new RandomSelection(wormEntityPrefab, .1f) 
+            {5, earthEntityPrefab},
+            {3, bodyEntityPrefab},
         };
         
         //Generate grid
@@ -49,7 +54,8 @@ public class GardenCreator : MonoBehaviour
         {
             for (int y = 0; y < GridConfig.height; y++)
             {
-                Entity randomPrefab = GetRandomValue(entityPrefabs);
+//                Entity randomPrefab = GetRandomValue(entityPrefabs);
+                Entity randomPrefab = RandomWeighted.Roll(table);
                 Entity instance = entityManager.Instantiate(randomPrefab);
                 int z = Root.ConfigManager.LayersConfig.LayerForEntity(EntityType.EARTH);
                 entityManager.SetComponentData(instance, new GridPosition { Value = new int2(x, y),  layer = z});
